@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Masters — Quantitative Winner Model</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dash">
+    <!-- Header -->
+    <header class="hdr">
+      <div class="hdr-left">
+        <svg class="logo" viewBox="0 0 28 28" width="28" height="28" aria-label="Augusta">
+          <circle cx="14" cy="14" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M9 20 L14 7 L19 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11 16h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>2026 Masters Quantitative Model</h1>
+          <span class="sub">69 variables / 30 contenders / 12-factor composite score / 25 years of winner benchmarks</span>
+        </div>
+      </div>
+      <div class="hdr-right">
+        <div class="tab-nav" id="tabNav">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="table">Full Data</button>
+          <button class="tab" data-tab="radar">Radar Compare</button>
+          <button class="tab" data-tab="scatter">Value Map</button>
+          <button class="tab" data-tab="benchmarks">Benchmarks</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tab: Overview -->
+    <div class="tab-panel active" id="panel-overview">
+      <!-- Model KPIs -->
+      <div class="kpi-row" id="kpiRow"></div>
+      <!-- Score breakdown chart + rankings -->
+      <div class="overview-grid">
+        <div class="card card-wide">
+          <h2>Composite Score Breakdown</h2>
+          <p class="card-sub">12-factor model: SG T2G (15) + SG Approach (10) + SG Putting (7) + OWGR (10) + Augusta History (12) + Recent Augusta (8) + 2026 Form (10) + Major Pedigree (8) + Age (5) + Market (5) + Efficiency (5) + Injury (penalty)</p>
+          <div class="chart-wrap"><canvas id="breakdownChart"></canvas></div>
+        </div>
+        <div class="card card-narrow">
+          <h2>Model Rankings</h2>
+          <div class="mini-rankings" id="miniRankings"></div>
+        </div>
+      </div>
+      <!-- Outsiders panel -->
+      <div class="card">
+        <h2>Highlighted Outsiders</h2>
+        <div class="outsider-cards" id="outsiderCards"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Full Data Table -->
+    <div class="tab-panel" id="panel-table">
+      <div class="table-controls">
+        <input type="text" id="tblSearch" placeholder="Search player...">
+        <select id="tblCategory">
+          <option value="all">All Variables</option>
+          <option value="composite">Composite Score</option>
+          <option value="sg">Strokes Gained</option>
+          <option value="efficiency">Scoring &amp; Efficiency</option>
+          <option value="augusta">Augusta History</option>
+          <option value="form">2026 Form</option>
+          <option value="major">Major Pedigree</option>
+          <option value="market">Market / Odds</option>
+          <option value="bio">Biographical</option>
+        </select>
+      </div>
+      <div class="table-scroll" id="tableScroll">
+        <table id="fullTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <!-- Tab: Radar Compare -->
+    <div class="tab-panel" id="panel-radar">
+      <div class="radar-controls">
+        <label>Player 1: <select id="radar1"></select></label>
+        <label>Player 2: <select id="radar2"></select></label>
+        <label>Player 3: <select id="radar3"></select></label>
+      </div>
+      <div class="radar-grid">
+        <div class="card"><canvas id="radarChart" height="400"></canvas></div>
+        <div class="card" id="radarDetail"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Value Map (Scatter) -->
+    <div class="tab-panel" id="panel-scatter">
+      <div class="scatter-controls">
+        <label>X-Axis: <select id="scatterX">
+          <option value="implied_win_pct">Implied Win % (Odds)</option>
+          <option value="owgr">OWGR</option>
+          <option value="outright_odds">Decimal Odds</option>
+        </select></label>
+        <label>Y-Axis: <select id="scatterY">
+          <option value="composite_score">Composite Score</option>
+          <option value="sg_t2g">SG: Tee to Green</option>
+          <option value="sg_app">SG: Approach</option>
+          <option value="sg_total">SG: Total</option>
+          <option value="career_augusta_scoring_avg">Augusta Scoring Avg</option>
+        </select></label>
+      </div>
+      <div class="card chart-full"><canvas id="scatterChart"></canvas></div>
+    </div>
+
+    <!-- Tab: Benchmarks -->
+    <div class="tab-panel" id="panel-benchmarks">
+      <div class="bench-grid">
+        <div class="card">
+          <h2>Historical Winner Thresholds (2001–2025)</h2>
+          <div id="benchTable"></div>
+        </div>
+        <div class="card">
+          <h2>Player vs Winner Profile</h2>
+          <p class="card-sub">How each contender stacks up against the 25-year winner benchmarks</p>
+          <div id="benchComparison"></div>
+        </div>
+        <div class="card card-wide">
+          <h2>Winning Score Distribution</h2>
+          <div class="chart-wrap"><canvas id="winScoreChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
